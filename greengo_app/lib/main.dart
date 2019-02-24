@@ -192,10 +192,10 @@ class MyAppState extends State<MyApp> {
     }
 
     if(getSeverity() < 40){
-      return happyFace;
+      return sadFace;
     }
     else if(getSeverity() > 60){
-      return sadFace;
+      return happyFace;
     }
     
     return mediumFace;
@@ -257,7 +257,7 @@ class MyAppState extends State<MyApp> {
                 padding:EdgeInsets.fromLTRB(0, 10.0, 0, 0),
                 child: LinearProgressIndicator(
                   value: getSeverity() * .01,
-                  valueColor: new AlwaysStoppedAnimation<Color>(Color.fromRGBO(((getSeverity() / maxSeverityScale) * 255).toInt(), ((1 - (getSeverity() / maxSeverityScale)) * 255).toInt(), 0, 1)),
+                  valueColor: new AlwaysStoppedAnimation<Color>(Color.fromRGBO((1 - (getSeverity() / maxSeverityScale) * 255).toInt(), (((getSeverity() / maxSeverityScale)) * 255).toInt(), 0, 1)),
                   backgroundColor: Colors.grey,
                 ),
               ),
