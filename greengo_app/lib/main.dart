@@ -1,9 +1,9 @@
 // This sample shows adding an action to an [AppBar] that opens a shopping cart.
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
-import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math' as math;
@@ -205,7 +205,13 @@ class MyAppState extends State<MyApp> {
     if(carbonFootprint != null){
       return Scaffold(
         appBar: AppBar(
-          title: Text("GreenGo"),
+          title: Text("Search"),
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.search),onPressed: (){
+              showSearch(context: context, delegate: DataSearch());
+            })
+          ]
+      ),
         ),
         body: new ListView(
             shrinkWrap: true,
@@ -279,5 +285,51 @@ class MyAppState extends State<MyApp> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       );
     }
+  }
+}
+
+class DataSearch extends SearchDelegate<String>{
+  final items = ["Red Bull", "Chips"];
+  final recentSearch = [];
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    //actions for app bar
+    return [IconButton(icon:Icon(Icons.clear),onPressed: (){
+      query = "";
+    },)];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    // TODO: implement buildLeading
+    //leading icon on the left of the app bar
+    return IconButton(icon: AnimatedIcon(
+        icon: AnimatedIcons.menu_arrow,
+        progress: transitionAnimation),
+    onPressed: (){
+      close(context, null);
+    });
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    //show results
+    return null;
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    //show when someone searches
+    final searchList = query.isEmpty?recentSearch:
+
+    items.where((p)=> p.startsWith(query)).toList();
+
+    return ListView.builder(
+      itemBuilder: (context,index) => ListTile(
+      leading: Icon(Icons.search),
+      title: Text(searchList[index]),
+        ),
+      itemCount: searchList.length,
+    );
   }
 }
