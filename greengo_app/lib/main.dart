@@ -13,10 +13,10 @@ dynamic result = "";
 double textFontSize = 26;
 String productName = "";
 String imageURL = "";
-double carbonFootprint = null;
+dynamic carbonFootprint = null;
 String defaultImageURL = "https://cdn0.iconfinder.com/data/icons/thin-photography/57/thin-367_photo_image_wall_unavailable_missing-512.png";
-double maxCarbonFootprint = 15.34;
-double minCarbonFootprint = 0.251;
+double maxCarbonFootprint = 56236.8570281862;
+double minCarbonFootprint = 835.305173958;
 double maxSeverityScale = 100.0, minSeverityScale = 1.0;
 String sadFace = "https://banner2.kisspng.com/20180314/lcq/kisspng-smiley-face-sadness-clip-art-crying-smiley-faces-5aa943866fec30.8620468715210423104585.jpg";
 String mediumFace = "https://cdn.shopify.com/s/files/1/1061/1924/products/Neutral_Face_Emoji_large.png?v=1480481054";
@@ -118,7 +118,7 @@ class MyAppState extends State<MyApp> {
 
         if(response["name"] != null){
           productName = response["name"];
-          carbonFootprint = response["carbon"];
+          carbonFootprint = response["score"];
         }
         else{
           productName = "Cannot Find That Product";
@@ -157,7 +157,7 @@ class MyAppState extends State<MyApp> {
   }
 
   getDataFromUPC(String upcToSend) async {
-    var url = "http://129.8.229.220/api/get.php?type=upc&barcode=" + upcToSend;
+    var url = "https://www.rivera-web.com/hack2019/api/get.php?type=upc&barcode=" + upcToSend;
 
     final response =
       await http.get(url);
@@ -165,7 +165,7 @@ class MyAppState extends State<MyApp> {
       if (response.statusCode == 200) {
         // If server returns an OK response, parse the JSON
         final dynamic parsed = jsonDecode(response.body);
-        print("HELLO");
+
         print(parsed);
         
         // result = parsed["name"] + "    " + parsed["carbon"].toString();
@@ -204,6 +204,7 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    print(getSeverity());
 
     if(carbonFootprint != null){
       return Scaffold(
