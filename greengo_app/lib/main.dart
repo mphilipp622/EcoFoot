@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'dart:math' as math;
 
 
@@ -14,35 +13,16 @@ dynamic result = "";
 double textFontSize = 26;
 String productName = "Product Name";
 String imageURL = "";
-int carbonFootprint = 12;
+double carbonFootprint = 0;
 String defaultImageURL = "https://cdn0.iconfinder.com/data/icons/thin-photography/57/thin-367_photo_image_wall_unavailable_missing-512.png";
-int maxCarbonFootprint = 0;
-int minCarbonFootprint = 0;
-double _sliderValue = 1.0;
-double maxSeverityScale = 100, minSeverityScale = 1;
+double maxCarbonFootprint = 2.998246;
+double minCarbonFootprint = 0.03;
+double maxSeverityScale = 100.0, minSeverityScale = 1.0;
 
 void main() => runApp(MaterialApp(
   debugShowCheckedModeBanner: false,
   home: MyApp(),
 ));//MaterialApp
-
-setMinAndMaxCarbonFootprint() async{
-  var url = "http://129.8.229.220/api/get.php?type=upc&barcode=";
-
-    final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        // If server returns an OK response, parse the JSON
-        final dynamic parsed = jsonDecode(response.body);
-
-        maxCarbonFootprint = parsed["max"];
-        minCarbonFootprint = parsed["min"];
-      }  
-      else {
-        // If that response was not OK, throw an error.
-        throw Exception('Failed to load get');
-      }
-}
 
 class MyApp extends StatefulWidget {
 
@@ -196,6 +176,10 @@ class MyAppState extends State<MyApp> {
   }
 
   double getSeverity(){
+    if(carbonFootprint == null){
+      return 0.0;
+    }
+
     return (((maxSeverityScale - minSeverityScale) * (carbonFootprint - minCarbonFootprint)) / (maxCarbonFootprint - minCarbonFootprint)) + minSeverityScale;
   }
 
@@ -211,30 +195,32 @@ class MyAppState extends State<MyApp> {
               showSearch(context: context, delegate: DataSearch());
             })
           ]
-      ),
         ),
         body: new ListView(
             shrinkWrap: true,
             padding: const EdgeInsets.all(20.0),
             children: [
-              Padding(
-                padding:EdgeInsets.fromLTRB(0, 0, 0, 30.0),
-                child: Center(
-                  child: Text(
-                    productName,
-                    style: TextStyle(fontSize: textFontSize, fontWeight: FontWeight.bold),
-                  )
+              Container(
+                child: Padding(
+                  padding:EdgeInsets.fromLTRB(0, 0, 0, 30.0),
+                  child: Center(
+                    child: Text(
+                      productName,
+                      style: TextStyle(fontSize: textFontSize, fontWeight: FontWeight.bold),
+                    )
+                  ),
                 ),
               ),
               Center(
                 child: Text(
-                  carbonFootprint.toString(),
+                  carbonFootprint.toStringAsFixed(2) + " CO" + '\u2082' + "e",
                   style: TextStyle(fontSize: textFontSize, fontWeight:FontWeight.bold),
                 )
               ),
               LinearProgressIndicator(
-                value: 80.0 * .01,
-                valueColor: new AlwaysStoppedAnimation<Color>(Color.fromRGBO(((80 / 100) * 255).toInt(), ((1 - (80 / 100)) * 255).toInt(), 0, 1)),
+                value: getSeverity() * .01,
+                valueColor: new AlwaysStoppedAnimation<Color>(Color.fromRGBO(((getSeverity() / maxSeverityScale) * 255).toInt(), ((1 - (getSeverity() / maxSeverityScale)) * 255).toInt(), 0, 1)),
+                backgroundColor: Colors.grey,
               ),
               Padding(
                 padding:EdgeInsets.fromLTRB(0, 30.0, 0, 0),
