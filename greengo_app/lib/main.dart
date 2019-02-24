@@ -15,8 +15,8 @@ String productName = "";
 String imageURL = "";
 double carbonFootprint = null;
 String defaultImageURL = "https://cdn0.iconfinder.com/data/icons/thin-photography/57/thin-367_photo_image_wall_unavailable_missing-512.png";
-double maxCarbonFootprint = 2.998246;
-double minCarbonFootprint = 0.03;
+double maxCarbonFootprint = 15.34;
+double minCarbonFootprint = 0.251;
 double maxSeverityScale = 100.0, minSeverityScale = 1.0;
 String sadFace = "https://banner2.kisspng.com/20180314/lcq/kisspng-smiley-face-sadness-clip-art-crying-smiley-faces-5aa943866fec30.8620468715210423104585.jpg";
 String mediumFace = "https://cdn.shopify.com/s/files/1/1061/1924/products/Neutral_Face_Emoji_large.png?v=1480481054";
@@ -165,7 +165,7 @@ class MyAppState extends State<MyApp> {
       if (response.statusCode == 200) {
         // If server returns an OK response, parse the JSON
         final dynamic parsed = jsonDecode(response.body);
-
+        print("HELLO");
         print(parsed);
         
         // result = parsed["name"] + "    " + parsed["carbon"].toString();
@@ -236,8 +236,8 @@ class MyAppState extends State<MyApp> {
                   child: Image.network(
                     imageURL,
                     fit:BoxFit.contain,
-                    width: 128,
-                    height: 128,
+                    width: 156,
+                    height: 156,
                   ),
                 ),
               ),
@@ -249,7 +249,7 @@ class MyAppState extends State<MyApp> {
               ),
               Center(
                 child: Text(
-                  carbonFootprint.toStringAsFixed(2) + " CO" + '\u2082' + "e",
+                  carbonFootprint.toStringAsFixed(2) + " kJ / CO" + '\u2082' + "e",
                   style: TextStyle(fontSize: textFontSize, fontWeight:FontWeight.bold),
                 ),
               ),
