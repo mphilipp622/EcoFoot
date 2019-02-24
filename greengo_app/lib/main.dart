@@ -3,6 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
+import 'dart:async';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+dynamic result = "";
 
 void main() => runApp(MaterialApp(
   debugShowCheckedModeBanner: false,
@@ -18,12 +23,15 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  String result = "";
+  
+
   Future _scanQR() async{
     try{
       String qrResult = await BarcodeScanner.scan();
       setState(() {
-        result = qrResult;
+        getCarbonFootprint(qrResult).then((response){
+          result = response;
+        });
       });
     }on PlatformException catch(ex){
       if(ex.code == BarcodeScanner.CameraAccessDenied){
@@ -44,6 +52,21 @@ class MyAppState extends State<MyApp> {
         result = "Unknown Error $ex";
       });
     }
+  }
+
+  getCarbonFootprint(String upcToSend) async {
+    var url = "http://129.8.229.220/api/get.php?type=upc&barcode=" + upcToSend;
+
+    final response =
+      await http.get(url);
+
+    final dynamic parsed = jsonDecode(response.body);
+
+    print(parsed);
+    
+    result = parsed["name"] + "    " + parsed["carbon"].toString();
+
+    return result;
   }
 
   @override
