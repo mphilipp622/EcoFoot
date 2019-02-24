@@ -11,13 +11,16 @@ import 'dart:math' as math;
 dynamic result = "";
 
 double textFontSize = 26;
-String productName = "Product Name";
+String productName = "";
 String imageURL = "";
-double carbonFootprint = 0;
+double carbonFootprint = null;
 String defaultImageURL = "https://cdn0.iconfinder.com/data/icons/thin-photography/57/thin-367_photo_image_wall_unavailable_missing-512.png";
 double maxCarbonFootprint = 2.998246;
 double minCarbonFootprint = 0.03;
 double maxSeverityScale = 100.0, minSeverityScale = 1.0;
+String sadFace = "https://banner2.kisspng.com/20180314/lcq/kisspng-smiley-face-sadness-clip-art-crying-smiley-faces-5aa943866fec30.8620468715210423104585.jpg";
+String mediumFace = "https://cdn.shopify.com/s/files/1/1061/1924/products/Neutral_Face_Emoji_large.png?v=1480481054";
+String happyFace = "http://cliparts.co/cliparts/qTB/oEb/qTBoEbdMc.png";
 
 void main() => runApp(MaterialApp(
   debugShowCheckedModeBanner: false,
@@ -183,9 +186,25 @@ class MyAppState extends State<MyApp> {
     return (((maxSeverityScale - minSeverityScale) * (carbonFootprint - minCarbonFootprint)) / (maxCarbonFootprint - minCarbonFootprint)) + minSeverityScale;
   }
 
+  String getFace(){
+    if(getSeverity() == 0.0){
+      return "";
+    }
+
+    if(getSeverity() < 40){
+      return happyFace;
+    }
+    else if(getSeverity() > 60){
+      return sadFace;
+    }
+    
+    return mediumFace;
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+
     if(carbonFootprint != null){
       return Scaffold(
         appBar: AppBar(
@@ -202,7 +221,7 @@ class MyAppState extends State<MyApp> {
             children: [
               Container(
                 child: Padding(
-                  padding:EdgeInsets.fromLTRB(0, 0, 0, 30.0),
+                  padding:EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: Center(
                     child: Text(
                       productName,
@@ -211,22 +230,42 @@ class MyAppState extends State<MyApp> {
                   ),
                 ),
               ),
+              Padding(
+                padding:EdgeInsets.fromLTRB(0, 10, 0, 5),
+                child: Center(
+                  child: Image.network(
+                    imageURL,
+                    fit:BoxFit.contain,
+                    width: 128,
+                    height: 128,
+                  ),
+                ),
+              ),
+              Padding(
+                padding:EdgeInsets.fromLTRB(0, 5, 0, 45.0),
+                child: Divider(
+                  color: Colors.black,
+                ),
+              ),
               Center(
                 child: Text(
                   carbonFootprint.toStringAsFixed(2) + " CO" + '\u2082' + "e",
                   style: TextStyle(fontSize: textFontSize, fontWeight:FontWeight.bold),
-                )
-              ),
-              LinearProgressIndicator(
-                value: getSeverity() * .01,
-                valueColor: new AlwaysStoppedAnimation<Color>(Color.fromRGBO(((getSeverity() / maxSeverityScale) * 255).toInt(), ((1 - (getSeverity() / maxSeverityScale)) * 255).toInt(), 0, 1)),
-                backgroundColor: Colors.grey,
+                ),
               ),
               Padding(
-                padding:EdgeInsets.fromLTRB(0, 30.0, 0, 0),
+                padding:EdgeInsets.fromLTRB(0, 10.0, 0, 0),
+                child: LinearProgressIndicator(
+                  value: getSeverity() * .01,
+                  valueColor: new AlwaysStoppedAnimation<Color>(Color.fromRGBO(((getSeverity() / maxSeverityScale) * 255).toInt(), ((1 - (getSeverity() / maxSeverityScale)) * 255).toInt(), 0, 1)),
+                  backgroundColor: Colors.grey,
+                ),
+              ),
+              Padding(
+                padding:EdgeInsets.fromLTRB(0, 25.0, 0, 0),
                 child: Center(
                   child: Image.network(
-                    imageURL,
+                    getFace(),
                     fit:BoxFit.contain,
                     width: 128,
                     height: 128,
@@ -246,7 +285,12 @@ class MyAppState extends State<MyApp> {
     else{
       return Scaffold(
         appBar: AppBar(
-          title: Text("GreenGo"),
+          title: Text("Search"),
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.search),onPressed: (){
+              showSearch(context: context, delegate: DataSearch());
+            })
+          ]
         ),
         body: new ListView(
             shrinkWrap: true,
